@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "chat_service"
+version = "0.1.0"
+description = "A service to interact with OpenAI's GPT-4 API"
+authors = ["Nikita Pavlichenko <nikita.v.pavlichenko@gmail.com>"]
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.95.1"
+httpx = "^0.23.3"
+openai = "^0.27.1"
+uvicorn = "^0.22.0"
+black = "24.8.0"
+
+[tool.poetry.scripts]
+chat-service = "src.main:app"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

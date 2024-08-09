@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  chat_service:
+    build: ./chat_service
+    container_name: chat_service
+    ports:
+      - "8000:8000"
+    # environment:
+    #  OPENAI_API_KEY: ${OPENAI_API_KEY}
+
+  middleware_service:
+    build: ./middleware_service
+    container_name: middleware_service
+    ports:
+      - "8001:8001"
+    depends_on:
+      - redis
+      - chat_service
+      - postgresdb
+
+  postgresdb:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dbname
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+    driver: local
