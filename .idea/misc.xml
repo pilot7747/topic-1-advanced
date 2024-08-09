@@ -4,32 +4,6 @@
     <option name="enabledOnReformat" value="true" />
     <option name="enabledOnSave" value="true" />
     <option name="pathToExecutable" value="$USER_HOME$/.pyenv/shims/black" />
-    <option name="sdkName" value="Poetry (topic-1-advanced)" />
+    <option name="sdkName" value="Python 3.11" />
   </component>
-  <component name="ProjectInspectionProfilesVisibleTreeState">
-    <entry key="Project Default">
-      <profile-state>
-        <expanded-state>
-          <State>
-            <id>EditorConfig</id>
-          </State>
-          <State>
-            <id>GeneralJavaScript and TypeScript</id>
-          </State>
-          <State>
-            <id>Imports and dependenciesJavaScript and TypeScript</id>
-          </State>
-          <State>
-            <id>JavaScript and TypeScript</id>
-          </State>
-        </expanded-state>
-        <selected-state>
-          <State>
-            <id>EditorConfig</id>
-          </State>
-        </selected-state>
-      </profile-state>
-    </entry>
-  </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.11" project-jdk-type="Python SDK" />
 </project>

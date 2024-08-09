@@ -3,23 +3,23 @@ name = "middleware_service"
 version = "0.1.0"
 description = "A middleware service with auth, rate limiting, logging, and metrics"
 authors = ["Nikita Pavlichenko <nikita.v.pavlichenko@gmail.com>"]
-packages = [{include = "src"}]
+packages = [{include = "app"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
 asyncpg = "^0.29.0"
-fastapi = "^0.95.1"
+fastapi = "^0.112.0"
 python-multipart = "^0.0.9"
 databases = "^0.9.0"
 httpx = "^0.23.3"
 redis = "^5.0.8"
 passlib = "^1.7.4"
 psycopg2-binary = "^2.9.9"
-uvicorn = "^0.22.0"
+uvicorn = "^0.30.5"
 black = "24.8.0"
 
 [tool.poetry.scripts]
-middleware-service = "src.main:app"
+middleware-service = "app.main:app"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
