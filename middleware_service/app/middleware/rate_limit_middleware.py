@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Awaitable, Callable
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -12,7 +12,7 @@ from app.db.database import redis
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
     async def dispatch(
-        self, request: Request, call_next: Callable[[Request], Response]
+        self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
     ) -> Response:
         """
         Handles the dispatch of requests ensuring that rate limiting is respected.
