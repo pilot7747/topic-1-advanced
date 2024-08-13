@@ -47,3 +47,5 @@ jobs:
         git add k8s/gpt-4-mini-deployment.yaml k8s/gateway-service-deployment.yaml
         git commit -m "Update Kubernetes manifests with new image tags"
         git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT }}
