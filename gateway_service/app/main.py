@@ -12,13 +12,7 @@ from app.middleware.rate_limit_middleware import RateLimitMiddleware
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup logic
-    for _ in range(5):
-        try:
-            await database.connect()
-        except Exception as e:
-            from time import sleep
-            print(e)
-            sleep(120)
+    await database.connect()
     yield
     # Shutdown logic
     await database.disconnect()
