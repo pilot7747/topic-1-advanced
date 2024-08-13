@@ -35,14 +35,11 @@ spec:
           value: "password"
         - name: POSTGRES_DB
           value: "dbname"
+        - name: PGDATA
+          value: "/var/lib/postgresql/data/pgdata"  # Set PGDATA to a subdirectory
         volumeMounts:
-        - mountPath: /var/lib/postgresql/data
+        - mountPath: /var/lib/postgresql/data  # Mount the volume to the parent directory
           name: postgres-storage
-        resources:
-          requests:
-            cpu: "10m"
-          limits:
-            cpu: "20m"
       volumes:
       - name: postgres-storage
         persistentVolumeClaim:
