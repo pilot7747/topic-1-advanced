@@ -4,9 +4,7 @@ on:
   push:
     branches:
       - master
-    paths:
-      - inference_service/Dockerfile
-      - gateway_service/Dockerfile
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
