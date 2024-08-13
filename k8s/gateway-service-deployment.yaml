@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-service
+spec:
+  selector:
+    matchLabels:
+      app: gateway-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gateway-service
+    spec:
+      containers:
+      - name: gateway-service
+        image: gcr.io/optimum-airfoil-432321-n4/gateway-service:1
+        ports:
+        - containerPort: 8001
+        env:
+        - name: ADMIN_KEY
+          valueFrom:
+            secretKeyRef:
+              name: gateway-creds
+              key: ADMIN_KEY
+        - name: REDIS_HOST
+          value: "redis"
+        - name: INFERENCE_SERVICE_HOST
+          value: "gpt-4-mini"
+        - name: POSTGRES_HOST
+          value: "postgres"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service
+spec:
+  selector:
+    app: gateway-service
+  ports:
+    - protocol: TCP
+      port: 8001
+      targetPort: 8001
