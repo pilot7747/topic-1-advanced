@@ -10,3 +10,5 @@ We use Poetry and Python 3.11. To run services locally, install them with `poetr
 ```bash
 docker-compose up --buil
 ```
+
+Test
