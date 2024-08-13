@@ -42,10 +42,10 @@ jobs:
 
     - name: Commit and push updated Kubernetes manifests
       run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git add k8s/gpt-4-mini-deployment.yaml k8s/gateway-service-deployment.yaml
         git commit -m "Update Kubernetes manifests with new image tags"
         git push
       env:
-        GITHUB_TOKEN: ${{ secrets.PAT }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
