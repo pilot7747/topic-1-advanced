@@ -7,23 +7,26 @@ services:
     ports:
       - "6379:6379"
 
-  chat_service:
-    build: ./chat_service
-    container_name: chat_service
+  gpt_4_mini:
+    build: ./inference_service
+    container_name: inference_service
     ports:
       - "8000:8000"
-    # environment:
-    #  OPENAI_API_KEY: ${OPENAI_API_KEY}
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      MODEL_NAME: ${MODEL_NAME}
 
-  middleware_service:
+  gateway_service:
     build: ./middleware_service
-    container_name: middleware_service
+    container_name: gateway_service
     ports:
       - "8001:8001"
     depends_on:
       - redis
-      - chat_service
+      - inference_service
       - postgresdb
+    environment:
+      ADMIN_KEY: ${ADMIN_KEY}
 
   postgresdb:
     image: postgres:13

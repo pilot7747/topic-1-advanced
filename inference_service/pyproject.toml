@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "chat_service"
+name = "inference_service"
 version = "0.1.0"
 description = "A service to interact with OpenAI's GPT-4 API"
 authors = ["Nikita Pavlichenko <nikita.v.pavlichenko@gmail.com>"]

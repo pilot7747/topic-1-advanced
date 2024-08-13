@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "middleware_service"
+name = "gateway_service"
 version = "0.1.0"
-description = "A middleware service with auth, rate limiting, logging, and metrics"
+description = "A gateway service with auth, rate limiting, logging, and metrics"
 authors = ["Nikita Pavlichenko <nikita.v.pavlichenko@gmail.com>"]
 packages = [{include = "app"}]
 
