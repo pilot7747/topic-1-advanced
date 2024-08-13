@@ -7,6 +7,7 @@ from pydantic import BaseModel
 app = FastAPI()
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
+model_name = os.getenv("MODEL_NAME")
 
 
 class Message(BaseModel):
@@ -31,7 +32,7 @@ async def chat_gpt(chat_request: ChatRequest) -> ChatResponse:
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 *[
-                    {"role": "user", "content": msg}
+                    {"role": msg.role, "content": msg.text}
                     for msg in chat_request.chat_history
                 ],
                 {"role": "user", "content": chat_request.message},
