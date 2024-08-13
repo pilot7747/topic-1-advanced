@@ -28,7 +28,7 @@ services:
     environment:
       ADMIN_KEY: ${ADMIN_KEY}
 
-  postgresdb:
+  postgres:
     image: postgres:13
     environment:
       POSTGRES_USER: user
