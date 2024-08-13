@@ -28,7 +28,7 @@ class ChatResponse(BaseModel):
 async def chat_gpt(chat_request: ChatRequest) -> ChatResponse:
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4",
+            model=model_name,
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 *[

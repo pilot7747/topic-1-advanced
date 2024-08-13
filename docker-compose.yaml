@@ -14,7 +14,7 @@ services:
       - "8000:8000"
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
-      MODEL_NAME: ${MODEL_NAME}
+      MODEL_NAME: "gpt-4-mini"
 
   gateway_service:
     build: ./middleware_service
