@@ -38,6 +38,11 @@ spec:
         volumeMounts:
         - mountPath: /var/lib/postgresql/data
           name: postgres-storage
+        resources:
+          requests:
+            cpu: "10m"
+          limits:
+            cpu: "20m"
       volumes:
       - name: postgres-storage
         persistentVolumeClaim:

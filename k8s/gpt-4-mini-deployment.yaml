@@ -25,6 +25,11 @@ spec:
               key: OPENAI_API_KEY
         - name: MODEL_NAME
           value: "gpt-4-mini"
+        resources:
+          requests:
+            cpu: "10m"
+          limits:
+            cpu: "20m"
 ---
 apiVersion: v1
 kind: Service

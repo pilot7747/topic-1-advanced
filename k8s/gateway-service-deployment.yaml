@@ -29,6 +29,11 @@ spec:
           value: "gpt-4-mini"
         - name: POSTGRES_HOST
           value: "postgres"
+        resources:
+          requests:
+            cpu: "10m"
+          limits:
+            cpu: "20m"
 ---
 apiVersion: v1
 kind: Service
