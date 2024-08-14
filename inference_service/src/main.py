@@ -1,28 +1,31 @@
 import os
+import logging
 
 import openai
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
+# Initialize the FastAPI app
 app = FastAPI()
 
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Set OpenAI API key and model name
 openai.api_key = os.getenv("OPENAI_API_KEY")
 model_name = os.getenv("MODEL_NAME")
-
 
 class Message(BaseModel):
     text: str
     role: str
 
-
 class ChatRequest(BaseModel):
     message: str
     chat_history: list[Message]
 
-
 class ChatResponse(BaseModel):
     response: str
-
 
 @app.post("/chat/")
 async def chat_gpt(chat_request: ChatRequest) -> ChatResponse:
@@ -40,4 +43,10 @@ async def chat_gpt(chat_request: ChatRequest) -> ChatResponse:
         )
         return ChatResponse(response=response.choices[0].message["content"])
     except openai.OpenAIError as e:
+        # Log the error with traceback
+        logger.error(f"OpenAI API error: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"OpenAI API error: {str(e)}")
+    except Exception as e:
+        # Log unexpected errors
+        logger.error(f"Unexpected error: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {str(e)}")
