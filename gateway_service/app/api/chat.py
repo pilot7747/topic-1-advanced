@@ -68,11 +68,11 @@ async def chat_proxy(chat_request: ChatRequest) -> ChatResponse:
         )
 
     await redis.rpush(
-        f"chat_history:{chat_request.chat_id}",
+        f"chat_history:{chat_id}",
         json.dumps({"text": chat_request.message, "role": "user"}),
     )
     await redis.rpush(
-        f"chat_history:{chat_request.chat_id}",
+        f"chat_history:{chat_id}",
         json.dumps({"text": response.json()["response"], "role": "assistant"}),
     )
     response_text = response.json()["response"]
