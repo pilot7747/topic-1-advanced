@@ -50,9 +50,13 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Set up kubectl
+    - name: Install kubectl
       run: |
-        gcloud components install kubectl
+        sudo apt-get update
+        sudo apt-get install -y kubectl
+
+    - name: Configure kubectl
+      run: |
         gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER_NAME }} --zone ${{ secrets.GKE_ZONE }} --project ${{ secrets.GCP_PROJECT_ID }}
 
     - name: Apply Kubernetes manifests
