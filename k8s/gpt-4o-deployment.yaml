@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gpt-4o
+spec:
+  selector:
+    matchLabels:
+      app: gpt-4o
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gpt-4o
+    spec:
+      containers:
+      - name: gpt-4o
+        image: gcr.io/optimum-airfoil-432321-n4/inference-service:58b3057457c334c16880ebc06a25efab59fcc64c
+        ports:
+        - containerPort: 8000
+        env:
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: openai-api-key
+              key: OPENAI_API_KEY
+        - name: MODEL_NAME
+          value: "gpt-4o"
+        resources:
+          requests:
+            cpu: "10m"
+          limits:
+            cpu: "20m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gpt-4o
+spec:
+  selector:
+    app: gpt-4o
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000

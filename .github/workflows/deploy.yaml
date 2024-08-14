@@ -37,6 +37,7 @@ jobs:
         docker build -t $IMAGE_TAG ./inference_service
         docker push $IMAGE_TAG
         sed -i "s|image: .*inference-service:.*|image: ${IMAGE_TAG}|" k8s/gpt-4-mini-deployment.yaml
+        sed -i "s|image: .*inference-service:.*|image: ${IMAGE_TAG}|" k8s/gpt-4o-deployment.yaml
 
     - name: Build and push gateway-service image
       run: |
