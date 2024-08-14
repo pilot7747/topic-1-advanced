@@ -1,0 +1,77 @@
+name: Check and Update Poetry Lock Files
+
+on:
+  push:
+    paths:
+      - 'gateway_service/pyproject.toml'
+      - 'inference_service/pyproject.toml'
+  pull_request:
+    paths:
+      - 'gateway_service/pyproject.toml'
+      - 'inference_service/pyproject.toml'
+
+jobs:
+  update-poetry-lock:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Check and update poetry.lock in gateway_service
+        if: |
+          contains(github.event.head_commit.message, 'gateway_service/pyproject.toml')
+        run: |
+          cd gateway_service
+          poetry lock
+        continue-on-error: true
+
+      - name: Check and update poetry.lock in inference_service
+        if: |
+          contains(github.event.head_commit.message, 'inference_service/pyproject.toml')
+        run: |
+          cd inference_service
+          poetry lock
+        continue-on-error: true
+
+      - name: Commit changes if any
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          changed=false
+
+          # Check for changes in gateway_service
+          cd gateway_service
+          if [ -n "$(git status --porcelain | grep poetry.lock)" ]; then
+            git add poetry.lock
+            changed=true
+          fi
+          cd ..
+
+          # Check for changes in inference_service
+          cd inference_service
+          if [ -n "$(git status --porcelain | grep poetry.lock)" ]; then
+            git add poetry.lock
+            changed=true
+          fi
+          cd ..
+
+          if [ "$changed" = true ]; then
+            git commit -m "Update poetry.lock after pyproject.toml changes"
+            git push
+          else
+            echo "No changes to commit"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
