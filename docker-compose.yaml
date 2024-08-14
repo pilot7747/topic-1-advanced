@@ -7,7 +7,7 @@ services:
     ports:
       - "6379:6379"
 
-  gpt_4_mini:
+  gpt-4-mini:
     build: ./inference_service
     container_name: inference_service
     ports:

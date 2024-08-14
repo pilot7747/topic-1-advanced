@@ -26,7 +26,7 @@ async def chat_proxy(chat_request: ChatRequest) -> ChatResponse:
 
     async with httpx.AsyncClient() as client:
         response = await client.post(
-            "http://chat_service:8000/chat/",
+            "http://gpt-4-mini:8000/chat/",
             json={"message": chat_request.message, "chat_history": chat_history},
         )
 
