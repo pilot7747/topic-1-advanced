@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'k8s/**'
+      - 'gateway_service/**'
+      - 'inference_service/**'
+      - '.github/**'
   workflow_dispatch:
 
 jobs:
