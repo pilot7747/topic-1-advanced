@@ -44,7 +44,7 @@ async def chat_gpt(chat_request: ChatRequest) -> ChatResponse:
                 {"role": "user", "content": chat_request.message},
             ],
         )
-        return ChatResponse(response=response.choices[0].message["content"])
+        return ChatResponse(response=response.choices[0].message.content)
     except openai.OpenAIError as e:
         # Log the error with traceback
         logger.error(f"OpenAI API error: {str(e)}", exc_info=True)
