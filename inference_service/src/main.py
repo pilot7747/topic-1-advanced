@@ -1,8 +1,9 @@
-import os
 import logging
+import os
 
 import openai
 from fastapi import FastAPI, HTTPException
+from openai import OpenAI
 from pydantic import BaseModel
 
 # Initialize the FastAPI app
@@ -12,8 +13,10 @@ app = FastAPI()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Set OpenAI API key and model name
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Set OpenAI API client and model name
+client = OpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY"),
+)
 model_name = os.getenv("MODEL_NAME")
 
 class Message(BaseModel):
@@ -30,7 +33,7 @@ class ChatResponse(BaseModel):
 @app.post("/chat/")
 async def chat_gpt(chat_request: ChatRequest) -> ChatResponse:
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model=model_name,
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
