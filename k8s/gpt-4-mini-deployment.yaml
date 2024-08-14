@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: gpt-4-mini
-        image: gcr.io/optimum-airfoil-432321-n4/inference-service:50a228ba8248b7875bc54ff0210760b67ef07fe2
+        image: gcr.io/optimum-airfoil-432321-n4/inference-service:58b3057457c334c16880ebc06a25efab59fcc64c
         ports:
         - containerPort: 8000
         env:
