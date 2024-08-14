@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: gateway-service
-        image: gcr.io/optimum-airfoil-432321-n4/gateway-service:afdfefca6fd96d32332677662e0e48ddc86171fa
+        image: gcr.io/optimum-airfoil-432321-n4/gateway-service:6e513a26e9eb8b779b2648e6dac1289f659adf4a
         ports:
         - containerPort: 8001
         env:
