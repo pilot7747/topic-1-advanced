@@ -3,7 +3,7 @@ name: Build, Push Docker Images, and Update K8s
 on:
   push:
     branches:
-      - master
+      - main
   workflow_dispatch:
 
 jobs:
