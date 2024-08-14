@@ -25,10 +25,15 @@ async def chat_proxy(chat_request: ChatRequest) -> ChatResponse:
     chat_history = [json.loads(msg.decode()) for msg in chat_history]
 
     async with httpx.AsyncClient() as client:
-        response = await client.post(
-            "http://gpt-4-mini:8000/chat/",
-            json={"message": chat_request.message, "chat_history": chat_history},
-        )
+        try:
+            response = await client.post(
+                "http://gpt-4-mini:8000/chat/",
+                json={"message": chat_request.message, "chat_history": chat_history},
+            )
+        except httpx.ConnectError:
+            raise HTTPException(
+                status_code=500, detail="Failed to connect to chat service"
+            )
 
     if response.status_code != 200:
         raise HTTPException(
