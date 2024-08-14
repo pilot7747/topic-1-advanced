@@ -1,8 +1,8 @@
-# Project Name: **Advanced Gateway Service and Inference System**
+# LLM Chat Project
 
 ## Overview
 
-This project implements an advanced gateway service integrated with an inference service using FastAPI. The gateway service acts as the entry point for all user interactions, handling authentication, rate limiting, logging, and API routing, while the inference service processes requests and interacts with external APIs (such as OpenAI). This project leverages Poetry for dependency management and supports deployment via Docker Compose and Kubernetes.
+This project implements a gateway service integrated with an inference service using FastAPI. The gateway service acts as the entry point for all user interactions, handling authentication, rate limiting, logging, and API routing, while the inference service processes requests and interacts with external APIs (such as OpenAI). This project leverages Poetry for dependency management and supports deployment via Docker Compose and Kubernetes.
 
 ## Table of Contents
 
