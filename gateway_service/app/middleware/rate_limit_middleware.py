@@ -30,6 +30,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         if not user_token or user_token == ADMIN_TOKEN:
             return await call_next(request)
 
+        if request.url.path.rstrip("/") != "/chat":
+            return await call_next(request)
+
         user_key = f"{RATE_LIMIT_KEY_PREFIX}:{user_token}"
         count = await redis.get(user_key)
         if count and int(count) >= RATE_LIMIT:
