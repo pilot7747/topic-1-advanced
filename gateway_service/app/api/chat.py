@@ -55,7 +55,7 @@ async def chat_proxy(chat_request: ChatRequest) -> ChatResponse:
             response = await client.post(
                 f"http://{INFERENCE_ROUTING[chat_request.model]}:8000/chat/",
                 json={"message": chat_request.message, "chat_history": chat_history},
-                timeout=httpx.Timeout(15.0),
+                timeout=httpx.Timeout(60.0),
             )
         except httpx.ConnectError:
             raise HTTPException(
