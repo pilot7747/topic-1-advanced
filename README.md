@@ -100,6 +100,17 @@ export DATABASE_URL="postgresql://user:password@postgres/dbname"
 
 For development, you might also want to use a `.env` file to load these variables automatically.
 
+For the code to be able to work with PostgreSQL, you need to do a little database management and
+attach to the DB's container and run this query in `psql`:
+
+```postgresql
+CREATE TABLE users (
+    username VARCHAR PRIMARY KEY,
+    hashed_password VARCHAR,
+    api_key VARCHAR UNIQUE
+);
+```
+
 ## Usage
 
 ### User's Entrypoint
