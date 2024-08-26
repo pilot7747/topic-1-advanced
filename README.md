@@ -56,7 +56,7 @@ This project implements a gateway service integrated with an inference service u
 │   └── redis-deployment.yaml
 ```
 
-## Installation
+## Installation for Development
 
 ### 1. Clone the Repository
 
@@ -126,17 +126,15 @@ The user's entry point to the system is the **Gateway Service**. This service ha
 
 1. **Run the Gateway Service**:
    ```bash
-   poetry run uvicorn gateway_service.app.main:app --reload
+   poetry run uvicorn gateway_service.app.main:app --host 0.0.0.0 --port 8001 --reload
    ```
 
-   The gateway service will listen for requests on the specified port (default is `http://localhost:8000`).
+   The gateway service will listen for requests on the specified port (default is `http://localhost:8001`).
 
 2. **Run the Inference Service** (if needed):
    ```bash
-   poetry run uvicorn inference_service.src.main:app --reload
+   poetry run uvicorn inference_service.src.main:app --host 0.0.0.0 --port 8000 --reload
    ```
-
-   The inference service processes specific requests routed by the gateway, typically those requiring interaction with an AI model.
 
 ## Deployment
 
