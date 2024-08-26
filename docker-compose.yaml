@@ -9,22 +9,32 @@ services:
 
   gpt-4-mini:
     build: ./inference_service
-    container_name: inference_service
+    container_name: inference_service_gpt4mini
     ports:
-      - "8000:8000"
+      - "8002:8000"
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
-      MODEL_NAME: "gpt-4-mini"
+      MODEL_NAME: "gpt-4o-mini"
+
+  gpt-4o:
+    build: ./inference_service
+    container_name: inference_service_gpt4o
+    ports:
+      - "8003:8000"
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      MODEL_NAME: "gpt-4o"
 
   gateway_service:
-    build: ./middleware_service
+    build: ./gateway_service
     container_name: gateway_service
     ports:
       - "8001:8001"
     depends_on:
       - redis
-      - inference_service
-      - postgresdb
+      - gpt-4-mini
+      - gpt-4o
+      - postgres
     environment:
       ADMIN_KEY: ${ADMIN_KEY}
 

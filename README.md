@@ -126,14 +126,16 @@ The user's entry point to the system is the **Gateway Service**. This service ha
 
 1. **Run the Gateway Service**:
    ```bash
-   poetry run uvicorn gateway_service.app.main:app --host 0.0.0.0 --port 8001 --reload
+   cd gateway_service
+   poetry run uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
    ```
 
    The gateway service will listen for requests on the specified port (default is `http://localhost:8001`).
 
 2. **Run the Inference Service** (if needed):
    ```bash
-   poetry run uvicorn inference_service.src.main:app --host 0.0.0.0 --port 8000 --reload
+   cd inference_service
+   poetry run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
    ```
 
 ## Deployment
