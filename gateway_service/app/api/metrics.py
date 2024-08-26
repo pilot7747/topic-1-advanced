@@ -1,7 +1,6 @@
-from fastapi import APIRouter, Depends
-
 from app.core.metrics import metrics
 from app.core.security import verify_token
+from fastapi import APIRouter, Depends
 
 router = APIRouter()
 

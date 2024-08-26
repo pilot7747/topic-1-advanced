@@ -1,11 +1,10 @@
+from app.core.config import ADMIN_TOKEN
+from app.db.database import database
+from app.db.models import users
 from fastapi import HTTPException, Security
 from fastapi.security import APIKeyHeader
 from passlib.context import CryptContext
 from sqlalchemy.sql import select
-
-from app.core.config import ADMIN_TOKEN
-from app.db.database import database
-from app.db.models import users
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 api_key_header = APIKeyHeader(name="Authorization", auto_error=False)

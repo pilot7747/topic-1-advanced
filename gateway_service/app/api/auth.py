@@ -1,11 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.sql import select, insert
-
 from app.core.security import get_password_hash
 from app.db.database import database
 from app.db.models import users
 from app.schemas.signup import SignupResponse
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.sql import insert, select
 
 router = APIRouter()
 

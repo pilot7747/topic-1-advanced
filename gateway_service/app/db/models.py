@@ -1,6 +1,5 @@
-from sqlalchemy import Table, Column, String
-
 from app.db.database import metadata
+from sqlalchemy import Column, String, Table
 
 users = Table(
     "users",

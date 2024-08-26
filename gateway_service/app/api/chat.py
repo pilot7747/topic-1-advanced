@@ -3,13 +3,12 @@ import json
 import uuid
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException
-
+from app.core.config import INFERENCE_ROUTING
 from app.core.metrics import update_tokens_in, update_tokens_out
 from app.core.security import verify_token
 from app.db.database import redis
 from app.schemas.chat import ChatRequest, ChatResponse
-from app.core.config import INFERENCE_ROUTING
+from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter()
 

@@ -19,16 +19,20 @@ client = OpenAI(
 )
 model_name = os.getenv("MODEL_NAME")
 
+
 class Message(BaseModel):
     text: str
     role: str
+
 
 class ChatRequest(BaseModel):
     message: str
     chat_history: list[Message]
 
+
 class ChatResponse(BaseModel):
     response: str
+
 
 @app.post("/chat/")
 async def chat_gpt(chat_request: ChatRequest) -> ChatResponse:
@@ -52,4 +56,6 @@ async def chat_gpt(chat_request: ChatRequest) -> ChatResponse:
     except Exception as e:
         # Log unexpected errors
         logger.error(f"Unexpected error: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"An unexpected error occurred: {str(e)}"
+        )

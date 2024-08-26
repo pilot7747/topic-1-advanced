@@ -1,11 +1,10 @@
 from typing import Callable
 
+from app.core.metrics import increment_metric
+from app.core.security import check_token
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
-
-from app.core.metrics import increment_metric
-from app.core.security import check_token
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
