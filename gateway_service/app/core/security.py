@@ -5,10 +5,12 @@ from fastapi import HTTPException, Security
 from fastapi.security import APIKeyHeader
 from passlib.context import CryptContext
 from sqlalchemy.sql import select
+from fastapi import FastAPI
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 api_key_header = APIKeyHeader(name="Authorization", auto_error=False)
 
+verification_app = FastAPI()
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
@@ -55,7 +57,7 @@ async def check_token(api_key: str) -> bool:
         return user is not None
     return True
 
-
+@verification_app.post("/token/")
 async def verify_token(api_key: str = Security(api_key_header)) -> None:
     """
     Verifies the provided API key by checking if it is valid.

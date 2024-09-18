@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "rag-service"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+lancedb = "^0.13.0"
+numpy = "^1.22"
+openai = "^1.45.0"
+pyarrow = "^17.0.0"
+tiktoken = "^0.7.0"
+transformers = "^4.44.2"
+fastapi = "^0.114.2"
+pydantic = "^2.9.1"
+uvicorn = "^0.30.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

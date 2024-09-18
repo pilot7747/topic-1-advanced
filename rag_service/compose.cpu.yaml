@@ -1,0 +1,25 @@
+services:
+  embed:
+    container_name: embed_service
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.5
+    ports:
+      - "8080:80"
+    volumes:
+      - ./data:/data
+    command: ["--model-id", "BAAI/bge-small-en-v1.5", "--port", "8080"]
+  rerank:
+    container_name: rerank_service
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.5
+    ports:
+      - "8081:80"
+    volumes:
+      - ./data:/data
+    command: ["--model-id", "mixedbread-ai/mxbai-rerank-base-v1", "--port", "8081"]
+  rag_service:
+    build:
+      context: .
+    depends_on:
+      - embed
+      - rerank
+    ports:
+      - "8004:8000"
