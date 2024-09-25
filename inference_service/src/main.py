@@ -46,7 +46,7 @@ async def chat_gpt(chat_request: ChatRequest) -> ChatResponse:
                     for msg in chat_request.chat_history
                 ],
                 {"role": "user", "content": chat_request.message},
-            ]
+            ],
         )
         return ChatResponse(response=response.choices[0].message.content)
     except openai.OpenAIError as e:
@@ -59,8 +59,3 @@ async def chat_gpt(chat_request: ChatRequest) -> ChatResponse:
         raise HTTPException(
             status_code=500, detail=f"An unexpected error occurred: {str(e)}"
         )
-
-
-# import uvicorn
-# if __name__ == "__main__":
-#     uvicorn.run(app, host="0.0.0.0", port=8000)
