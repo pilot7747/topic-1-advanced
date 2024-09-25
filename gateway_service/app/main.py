@@ -1,11 +1,11 @@
 from contextlib import asynccontextmanager
 
 from app.api import auth, chat, metrics, rag
+from app.core import security
 from app.db.database import database
 from app.middleware.auth_middleware import AuthMiddleware
 from app.middleware.logging_middleware import LoggingMiddleware
 from app.middleware.rate_limit_middleware import RateLimitMiddleware
-from app.core import security
 from fastapi import FastAPI
 
 

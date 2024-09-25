@@ -1,7 +1,7 @@
-import lancedb
-import pyarrow as pa
 import os
 
+import lancedb
+import pyarrow as pa
 from transformers import AutoConfig
 
 LANCE_DB = lancedb.connect(".lancedb")

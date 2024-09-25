@@ -1,11 +1,10 @@
 import logging
+
 import gradio as gr
 import httpx
-
+from config import OPENAI_MODEL, template_html
 # unofficial hack
 from gradio_modal import Modal
-
-from config import template_html, OPENAI_MODEL
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

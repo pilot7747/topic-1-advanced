@@ -1,13 +1,12 @@
-import httpx
-import logging
 import json
+import logging
 
-from fastapi import APIRouter, Depends, HTTPException
-
-from app.core.security import verify_token
+import httpx
 from app.api.chat import chat_proxy
-from app.schemas.rag import RAGRequest, AddToDBRequest
-from app.schemas.chat import ChatResponse, ChatRequest
+from app.core.security import verify_token
+from app.schemas.chat import ChatRequest, ChatResponse
+from app.schemas.rag import AddToDBRequest, RAGRequest
+from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter()
 
