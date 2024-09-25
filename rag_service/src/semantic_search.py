@@ -1,17 +1,11 @@
-import logging
 import json
-import numpy as np
-import httpx
-from fastapi import HTTPException
+import logging
 
-from config import (
-    RERANK_URL,
-    EMBED_URL,
-    LANCE_TABLE,
-    REFINE_FACTOR,
-    NPROBES,
-    BATCH_SIZE
-)
+import httpx
+import numpy as np
+from config import (BATCH_SIZE, EMBED_URL, LANCE_TABLE, NPROBES, REFINE_FACTOR,
+                    RERANK_URL)
+from fastapi import HTTPException
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
