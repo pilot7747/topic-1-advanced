@@ -3,7 +3,6 @@ import os
 
 import openai
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import StreamingResponse
 from openai import OpenAI
 from pydantic import BaseModel
 
@@ -62,33 +61,6 @@ async def chat_gpt(chat_request: ChatRequest) -> ChatResponse:
         )
 
 
-@app.post("/stream_chat/")
-async def stream_chat_gpt(chat_request: ChatRequest) -> StreamingResponse:
-    try:
-        response = client.chat.completions.create(
-            model=model_name,
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                *[
-                    {"role": msg.role, "content": msg.text}
-                    for msg in chat_request.chat_history
-                ],
-                {"role": "user", "content": chat_request.message},
-            ],
-            stream=True
-        )
-        def stream_response():
-            for chunk in response:
-                if chunk.choices[0].delta.content:
-                    yield chunk.choices[0].delta.content
-        return StreamingResponse(stream_response())
-    except openai.OpenAIError as e:
-        # Log the error with traceback
-        logger.error(f"OpenAI API error: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"OpenAI API error: {str(e)}")
-    except Exception as e:
-        # Log unexpected errors
-        logger.error(f"Unexpected error: {str(e)}", exc_info=True)
-        raise HTTPException(
-            status_code=500, detail=f"An unexpected error occurred: {str(e)}"
-        )
+# import uvicorn
+# if __name__ == "__main__":
+#     uvicorn.run(app, host="0.0.0.0", port=8000)

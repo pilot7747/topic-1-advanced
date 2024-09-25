@@ -1,58 +1,13 @@
-FROM ubuntu:22.04
+FROM python:3.11-slim
 
-ARG DOCS_DIR
+RUN pip install poetry==1.8.3
+COPY pyproject.toml poetry.lock ./
+RUN poetry install --no-root
 
-RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    make \
-    build-essential \
-    libssl-dev \
-    zlib1g-dev \
-    libbz2-dev \
-    libreadline-dev \
-    libsqlite3-dev \
-    wget \
-    curl \
-    llvm \
-    libncurses5-dev \
-    libncursesw5-dev \
-    xz-utils \
-    tk-dev \
-    libffi-dev \
-    liblzma-dev \
-    git
-
-ENV HOME="/root"
-WORKDIR ${HOME}
-
-RUN git clone --depth=1 https://github.com/pyenv/pyenv.git .pyenv
-
-ENV PYENV_ROOT="${HOME}/.pyenv"
-ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:${PATH}"
-
-RUN eval "$(pyenv init -)"
-
-RUN pyenv install 3.10
-RUN pyenv global 3.10
-
-RUN pip install --upgrade pip
-COPY src/requirements.txt requirements.txt
-RUN pip install -r requirements.txt
-
-WORKDIR /usr/src
-
-COPY src app
-COPY ${DOCS_DIR} docs_dir
-
-COPY src/embed_and_index.py .
-RUN chmod +x embed_and_index.py
-
-COPY entrypoint.sh .
-RUN chmod +x entrypoint.sh
-
-EXPOSE 7860
+COPY src/ ./rag_gradio_service
+RUN poetry install --no-dev
+WORKDIR /rag_gradio_service
 
 ENV GRADIO_SERVER_NAME="0.0.0.0"
 
-CMD ["python", "/usr/src/main.py"]
-#ENTRYPOINT ["/usr/src/entrypoint.sh"]
+CMD ["poetry", "run", "gradio", "main.py"]

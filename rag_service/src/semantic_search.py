@@ -13,7 +13,6 @@ from config import (
     BATCH_SIZE
 )
 
-# Setting up the logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -30,7 +29,7 @@ async def retrieve(query: str, k: int) -> list[str]:
                     "inputs": query,
                     "truncate": True
                 },
-                timeout=httpx.Timeout(20.0)
+                timeout=httpx.Timeout(60.0)
             )
         except httpx.ConnectError:
             raise HTTPException(
@@ -68,15 +67,15 @@ async def rerank(query: str, documents: list[str], k: int) -> list[str]:
                         "texts": documents[i * BATCH_SIZE:(i + 1) * BATCH_SIZE],
                         "truncate": True
                     },
-                    timeout=httpx.Timeout(20.0)
+                    timeout=httpx.Timeout(60.0)
                 )
             except httpx.ConnectError:
                 raise HTTPException(
-                    status_code=500, detail="Failed to connect to TEI embed service"
+                    status_code=500, detail="Failed to connect to TEI rerank service"
                 )
         if response.status_code != 200:
             raise HTTPException(
-                status_code=response.status_code, detail="TEI embed service error"
+                status_code=response.status_code, detail="TEI rerank service error"
             )
         batch_scores = json.loads(response.content)
         batch_scores = [s["score"] for s in batch_scores]

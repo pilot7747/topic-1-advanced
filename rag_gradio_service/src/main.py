@@ -1,7 +1,6 @@
 import logging
 import gradio as gr
 import httpx
-import json
 
 # unofficial hack
 from gradio_modal import Modal
@@ -13,35 +12,45 @@ logger = logging.getLogger(__name__)
 
 credentials = {}
 
+def get_id_from_req(request: gr.Request) -> str:
+    headers = request.request.headers.get("user-agent")
+    ip = request.request.client.host
+
+    return ip + headers
+
+
 def add_text(history: list[list], text: str) -> tuple[list[list], gr.Textbox]:
     history = [] if history is None else history
     history = history + [[text, None]]
     return history, gr.Textbox(value="", interactive=False)
 
 
-async def generate(prompt: str):
+async def generate(prompt: str, user_id: str) -> str:
     """
-    Generate a sequence of tokens based on a given prompt and history using OpenAI API.
-    History is not currently used
+    Generate given prompt and user_id
     """
-    headers = {"Authorization": f"Bearer: {credentials[request.username]}"}
-
     async with httpx.AsyncClient() as client:
         try:
-            resp = await client.post(
-                f"http://{OPENAI_MODEL}:8000/chat/",
-                json={"message": prompt},
-                headers=headers,
-                timeout=httpx.Timeout(20.0),
+            response = await client.post(
+                f"http://gateway_service:8001/chat/",
+                json={
+                    "message": prompt,
+                    "model": OPENAI_MODEL,
+                    "chat_id": credentials[user_id]["chat_id"]
+                },
+                headers={"Authorization": credentials[user_id]['token']},
+                timeout=httpx.Timeout(60.0),
             )
         except httpx.ConnectError:
             raise gr.Error("Failed to connect to chat service")
 
-    if resp.status_code != 200:
-        raise gr.Error("RAG service error")
+    if response.status_code != 200:
+        raise gr.Error(response.json()["detail"])
 
-    res = json.loads(resp.content)["response"]
-    return res
+    credentials[user_id]["chat_id"] = response.json()["chat_id"]
+    resp_message = response.json()["response"]
+
+    return resp_message
 
 
 async def bot(history: list[list], use_reranker: bool, request: gr.Request):
@@ -52,58 +61,58 @@ async def bot(history: list[list], use_reranker: bool, request: gr.Request):
 
     async with httpx.AsyncClient() as client:
         try:
-            rag_response = await client.post(
-                f"http://0.0.0.0:8004/prompt_w_context/",
+            response = await client.post(
+                "http://rag_service:8000/prompt_w_context/",
                 json={"query": query, "use_reranker": use_reranker},
-                timeout=httpx.Timeout(20.0),
+                timeout=httpx.Timeout(60.0),
             )
         except httpx.ConnectError:
-            raise gr.Error("Failed to connect to chat service")
+            raise gr.Error("Failed to connect to RAG service")
 
-    if rag_response.status_code != 200:
-        raise gr.Error("RAG service error")
+    if response.status_code != 200:
+        raise gr.Error(response.json()["detail"])
 
-    rag_response = rag_response.json()
-    prompt_html = template_html.render(documents=rag_response["context"], query=query)
+    prompt_html = template_html.render(documents=response.json()["context"], query=query)
+    resp_message = await generate(
+        prompt=response.json()["message"],
+        user_id=get_id_from_req(request)
+    )
+    history[-1][1] = resp_message
 
-    history[-1][1] = ""
-    return generate(rag_response["message"]), prompt_html
+    return history, prompt_html
 
 
-async def api_key_auth(token, request: gr.Request):
-    headers = request.request.headers.get("user-agent")
-    ip = f"{request.request.client.host}:{request.request.client.port}"
-
+async def api_key_auth(token: str, request: gr.Request):
     async with httpx.AsyncClient() as client:
         try:
             response = await client.post(
-                f"http://0.0.0.0:8000/verify/token",
+                "http://gateway_service:8001/verify_token/",
                 headers={"Authorization": token},
-                timeout=httpx.Timeout(20.0),
+                timeout=httpx.Timeout(60.0),
             )
         except httpx.ConnectError:
             raise gr.Error("Failed to connect to verification service")
 
-    if response.status_code == 403:
-        raise gr.Error("Authorization error")
-    elif response.status_code != 200:
-        raise gr.Error("Gateway service error")
+    if response.status_code != 200:
+        raise gr.Error(response.json()["detail"])
 
-    if token:
-        credentials[ip + headers] = token
-        return Modal(visible=False)
+    credentials[get_id_from_req(request)] = {
+        "token": token,
+        "chat_id": None
+    }
 
-    raise gr.Warning("Token is not valid")
-    # return Modal(visible=True)
+    return Modal(visible=False)
 
 
 with gr.Blocks() as demo:
+    # blocking pop-up
     with Modal(
         visible=True,
         allow_user_close=False
     ) as modal:
         token = gr.Textbox(label="Provide your token:")
         submit_token = gr.Button(value="Submit")
+
     submit_token.click(api_key_auth, [token], [modal])
 
     chatbot = gr.Chatbot(
@@ -111,9 +120,7 @@ with gr.Blocks() as demo:
         elem_id="chatbot",
         avatar_images=('https://aui.atlassian.com/aui/8.8/docs/images/avatar-person.svg',
                        'https://huggingface.co/datasets/huggingface/brand-assets/resolve/main/hf-logo.svg'),
-        bubble_full_width=False,
-        show_copy_button=True,
-        show_share_button=True,
+        bubble_full_width=False
     )
 
     with gr.Row():
@@ -138,7 +145,6 @@ with gr.Blocks() as demo:
         bot, [chatbot, cb], [chatbot, prompt_html])
     # Turn it back on
     txt_msg.then(lambda: gr.Textbox(interactive=True), None, [txt], queue=False)
-
 
 
 demo.queue()

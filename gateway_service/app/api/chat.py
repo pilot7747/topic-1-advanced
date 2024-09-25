@@ -49,22 +49,26 @@ async def chat_proxy(chat_request: ChatRequest) -> ChatResponse:
         chat_id = generate_chat_id()
         chat_history = []
 
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.post(
-                f"http://{INFERENCE_ROUTING[chat_request.model]}:8000/chat/",
-                json={"message": chat_request.message, "chat_history": chat_history},
-                timeout=httpx.Timeout(60.0),
-            )
-        except httpx.ConnectError:
-            raise HTTPException(
-                status_code=500, detail="Failed to connect to chat service"
-            )
+    # async with httpx.AsyncClient() as client:
+    #     try:
+    #         response = await client.post(
+    #             f"http://{INFERENCE_ROUTING[chat_request.model]}:8000/chat/",
+    #             json={"message": chat_request.message, "chat_history": chat_history},
+    #             timeout=httpx.Timeout(60.0),
+    #         )
+    #     except httpx.ConnectError:
+    #         raise HTTPException(
+    #             status_code=500, detail="Failed to connect to chat service"
+    #         )
+    #
+    # if response.status_code != 200:
+    #     raise HTTPException(
+    #         status_code=response.status_code, detail="Chat service error"
+    #     )
 
-    if response.status_code != 200:
-        raise HTTPException(
-            status_code=response.status_code, detail="Chat service error"
-        )
+    from requests import Response
+    response = Response()
+    response._content = b'{"response":"oink oink"}'
 
     await redis.rpush(
         f"chat_history:{chat_id}",

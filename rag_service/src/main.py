@@ -1,28 +1,38 @@
 import json
 import logging
-import tiktoken
 import httpx
+import tiktoken
 from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException
 
 from semantic_search import rerank, retrieve
-from config import LANCE_TABLE, EMBED_URL, RAG_PROMPT
+from config import (
+    LANCE_TABLE,
+    EMBED_URL,
+    RAG_PROMPT,
+    PROMPT_TOKEN_LIMIT
+)
 
 app = FastAPI()
+# https://github.com/openai/tiktoken/blob/c0ba74c238d18b4824c25f3c27fc8698055b9a76/tiktoken/model.py#L20
+oai_tokenizer = tiktoken.get_encoding("o200k_base")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-OAI_TOKENIZER = tiktoken.get_encoding("cl100k_base")
-
 
 class RAGRequest(BaseModel):
     query: str
+    chat_id: str | None = None
+    model: str = "gpt-4o-mini"
     use_reranker: bool = True
     top_k_retrieve: int = 20
     top_k_rank: int = 4
-    prompt_token_limit: int = 2048
     max_out_tokens: int = 512
+
+
+class AddToDBRequest(BaseModel):
+    text: str
 
 
 class RAGResponse(BaseModel):
@@ -30,62 +40,68 @@ class RAGResponse(BaseModel):
     context: list[str]
 
 
-class AddToDBRequest(BaseModel):
-    text: str
-    truncate: True
-
-
 def prepare_message(
         query: str,
         docs: list[str],
-        prompt_token_limit: int,
         max_out_tokens: int
     ) -> (str, list[str]):
     """
-    This is an attempt to truncate the context to the preset limit in order to keep the postfix
+    An attempt to truncate the context not to go over token limit
     """
     context = "\n".join(docs)
     message = RAG_PROMPT.format(context=context, query=query)
 
-    while docs and len(OAI_TOKENIZER.encode(message)) > prompt_token_limit - max_out_tokens:
+    while docs and len(oai_tokenizer.encode(message)) > PROMPT_TOKEN_LIMIT - max_out_tokens:
         docs.pop()
         context = "\n".join(docs)
         message = RAG_PROMPT.format(context=context, query=query)
         logger.warning(f"Context was reduced due to the token limit. "
-                       f"Prompt was {len(OAI_TOKENIZER.encode(message))} tokens long")
+                       f"Prompt was {len(oai_tokenizer.encode(message))} tokens long")
 
-    message = OAI_TOKENIZER.decode(
-        OAI_TOKENIZER.encode(message)[:(prompt_token_limit - max_out_tokens)]
+    message = oai_tokenizer.decode(
+        oai_tokenizer.encode(message)[:(PROMPT_TOKEN_LIMIT - max_out_tokens)]
     )
-    print(message)
 
     return message, docs
 
 
 @app.post("/prompt_w_context/")
-async def prompt_w_context(rag_request: RAGRequest):
+async def prompt_w_context(rag_request: RAGRequest) -> RAGResponse:
+    """
+    Retrieves relevant documents and constructs a prompt
+
+    :param rag_request: query and other relevant params
+    :return: final prompt and a list of retrieved documents
+    """
     if rag_request.use_reranker:
         retrieved_docs = await retrieve(rag_request.query, rag_request.top_k_retrieve)
         documents = await rerank(rag_request.query, retrieved_docs, rag_request.top_k_rank)
     else:
         documents = await retrieve(rag_request.query, rag_request.top_k_rank)
 
-    message, documents = prepare_message(rag_request.query, documents,
-        rag_request.prompt_token_limit,
-        rag_request.max_out_tokens)
+    message, documents = prepare_message(
+        query=rag_request.query,
+        docs=documents,
+        max_out_tokens=rag_request.max_out_tokens
+    )
 
-    resp = RAGResponse(message=message, context=documents)
-    return resp
+    return RAGResponse(message=message, context=documents)
 
 
 @app.post("/add_to_rag_db/")
 async def add_to_db(add_to_db_request: AddToDBRequest):
+    """
+    Adds a single text document to a vector DB.
+
+    :param add_to_db_request: text to add to a DB
+    :raises HTTPException: if embedding service is unavailable
+    """
     async with httpx.AsyncClient() as client:
         try:
             response = await client.post(
                 EMBED_URL,
-                json=add_to_db_request.model_dump(),
-                timeout=httpx.Timeout(20.0),
+                json={"inputs": add_to_db_request.text},
+                timeout=httpx.Timeout(60.0),
             )
         except httpx.ConnectError:
             raise HTTPException(
@@ -106,7 +122,18 @@ async def add_to_db(add_to_db_request: AddToDBRequest):
 
 @app.get("/reindex/")
 async def reindex():
-    LANCE_TABLE.create_index()
+    """
+    Creates a new index for docs table
+
+    :raises HTTPException: on indexing error
+        An example is when # items in the table < default # clusters (256)
+    """
+    try:
+        LANCE_TABLE.create_index()
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=str(e)
+        )
 
 
 # import uvicorn

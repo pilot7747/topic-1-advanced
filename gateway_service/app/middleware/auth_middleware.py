@@ -31,7 +31,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
         :rtype: Response
         """
         normalized_path = request.url.path.rstrip("/")
-        if normalized_path in ["/docs", "/openapi.json", "/signup"]:
+        if normalized_path in ["/docs", "/openapi.json", "/signup", "/verify_token"]:
             return await call_next(request)
 
         token = request.headers.get("Authorization")
