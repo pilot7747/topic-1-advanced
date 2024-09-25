@@ -1,17 +1,12 @@
 import json
 import logging
+
 import httpx
 import tiktoken
-from pydantic import BaseModel
+from config import EMBED_URL, LANCE_TABLE, PROMPT_TOKEN_LIMIT, RAG_PROMPT
 from fastapi import FastAPI, HTTPException
-
+from pydantic import BaseModel
 from semantic_search import rerank, retrieve
-from config import (
-    LANCE_TABLE,
-    EMBED_URL,
-    RAG_PROMPT,
-    PROMPT_TOKEN_LIMIT
-)
 
 app = FastAPI()
 # https://github.com/openai/tiktoken/blob/c0ba74c238d18b4824c25f3c27fc8698055b9a76/tiktoken/model.py#L20
