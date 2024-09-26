@@ -1,13 +1,15 @@
 from app.core.config import ADMIN_TOKEN
 from app.db.database import database
 from app.db.models import users
-from fastapi import HTTPException, Security
+from fastapi import APIRouter, HTTPException, Security
 from fastapi.security import APIKeyHeader
 from passlib.context import CryptContext
 from sqlalchemy.sql import select
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 api_key_header = APIKeyHeader(name="Authorization", auto_error=False)
+
+router = APIRouter()
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -56,6 +58,7 @@ async def check_token(api_key: str) -> bool:
     return True
 
 
+@router.post("/verify_token/")
 async def verify_token(api_key: str = Security(api_key_header)) -> None:
     """
     Verifies the provided API key by checking if it is valid.

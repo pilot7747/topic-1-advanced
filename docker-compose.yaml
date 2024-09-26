@@ -1,5 +1,8 @@
 version: '3.8'
 
+include:
+  - path:
+    - rag_service/docker-compose.yaml
 services:
   redis:
     image: redis:alpine
@@ -35,6 +38,7 @@ services:
       - gpt-4-mini
       - gpt-4o
       - postgres
+      - rag_service
     environment:
       ADMIN_KEY: ${ADMIN_KEY}
 
@@ -48,6 +52,12 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  rag_gradio_service:
+    build: ./rag_gradio_service
+    container_name: rag_gradio_service
+    ports:
+      - "7860:7860"
 
 volumes:
   postgres_data:

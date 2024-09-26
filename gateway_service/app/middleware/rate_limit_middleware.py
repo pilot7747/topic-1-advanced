@@ -29,7 +29,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         if not user_token or user_token == ADMIN_TOKEN:
             return await call_next(request)
 
-        if request.url.path.rstrip("/") != "/chat":
+        if request.url.path.rstrip("/") not in ["/chat", "/rag"]:
             return await call_next(request)
 
         user_key = f"{RATE_LIMIT_KEY_PREFIX}:{user_token}"
