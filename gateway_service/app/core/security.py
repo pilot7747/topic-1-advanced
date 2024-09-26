@@ -11,6 +11,7 @@ api_key_header = APIKeyHeader(name="Authorization", auto_error=False)
 
 router = APIRouter()
 
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
     :param plain_password: The plain text password input by the user

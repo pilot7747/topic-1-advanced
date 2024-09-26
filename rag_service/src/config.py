@@ -31,5 +31,3 @@ Context:
 {context}
 ---
 Query: {query}"""
-
-

@@ -36,25 +36,28 @@ class RAGResponse(BaseModel):
 
 
 def prepare_message(
-        query: str,
-        docs: list[str],
-        max_out_tokens: int
-    ) -> (str, list[str]):
+    query: str, docs: list[str], max_out_tokens: int
+) -> (str, list[str]):
     """
     An attempt to truncate the context not to go over token limit
     """
     context = "\n".join(docs)
     message = RAG_PROMPT.format(context=context, query=query)
 
-    while docs and len(oai_tokenizer.encode(message)) > PROMPT_TOKEN_LIMIT - max_out_tokens:
+    while (
+        docs
+        and len(oai_tokenizer.encode(message)) > PROMPT_TOKEN_LIMIT - max_out_tokens
+    ):
         docs.pop()
         context = "\n".join(docs)
         message = RAG_PROMPT.format(context=context, query=query)
-        logger.warning(f"Context was reduced due to the token limit. "
-                       f"Prompt was {len(oai_tokenizer.encode(message))} tokens long")
+        logger.warning(
+            f"Context was reduced due to the token limit. "
+            f"Prompt was {len(oai_tokenizer.encode(message))} tokens long"
+        )
 
     message = oai_tokenizer.decode(
-        oai_tokenizer.encode(message)[:(PROMPT_TOKEN_LIMIT - max_out_tokens)]
+        oai_tokenizer.encode(message)[: (PROMPT_TOKEN_LIMIT - max_out_tokens)]
     )
 
     return message, docs
@@ -70,14 +73,16 @@ async def prompt_w_context(rag_request: RAGRequest) -> RAGResponse:
     """
     if rag_request.use_reranker:
         retrieved_docs = await retrieve(rag_request.query, rag_request.top_k_retrieve)
-        documents = await rerank(rag_request.query, retrieved_docs, rag_request.top_k_rank)
+        documents = await rerank(
+            rag_request.query, retrieved_docs, rag_request.top_k_rank
+        )
     else:
         documents = await retrieve(rag_request.query, rag_request.top_k_rank)
 
     message, documents = prepare_message(
         query=rag_request.query,
         docs=documents,
-        max_out_tokens=rag_request.max_out_tokens
+        max_out_tokens=rag_request.max_out_tokens,
     )
 
     return RAGResponse(message=message, context=documents)
@@ -109,9 +114,7 @@ async def add_to_db(add_to_db_request: AddToDBRequest):
         )
     vector = json.loads(response.content)[0]
 
-    data = [
-        {"vector": vector, "text": add_to_db_request.text}
-    ]
+    data = [{"vector": vector, "text": add_to_db_request.text}]
     LANCE_TABLE.add(data=data)
 
 
@@ -126,6 +129,4 @@ async def reindex():
     try:
         LANCE_TABLE.create_index()
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=str(e)
-        )
+        raise HTTPException(status_code=500, detail=str(e))

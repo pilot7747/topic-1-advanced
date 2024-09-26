@@ -40,7 +40,7 @@ async def rag(rag_request: RAGRequest) -> ChatResponse:
         ChatRequest(
             message=rag_response["message"],
             model=rag_request.model,
-            chat_id=rag_request.chat_id
+            chat_id=rag_request.chat_id,
         )
     )
 

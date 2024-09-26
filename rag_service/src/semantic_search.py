@@ -3,8 +3,14 @@ import logging
 
 import httpx
 import numpy as np
-from config import (BATCH_SIZE, EMBED_URL, LANCE_TABLE, NPROBES, REFINE_FACTOR,
-                    RERANK_URL)
+from config import (
+    BATCH_SIZE,
+    EMBED_URL,
+    LANCE_TABLE,
+    NPROBES,
+    REFINE_FACTOR,
+    RERANK_URL,
+)
 from fastapi import HTTPException
 
 logging.basicConfig(level=logging.INFO)
@@ -19,11 +25,8 @@ async def retrieve(query: str, k: int) -> list[str]:
         try:
             response = await client.post(
                 EMBED_URL,
-                json={
-                    "inputs": query,
-                    "truncate": True
-                },
-                timeout=httpx.Timeout(60.0)
+                json={"inputs": query, "truncate": True},
+                timeout=httpx.Timeout(60.0),
             )
         except httpx.ConnectError:
             raise HTTPException(
@@ -34,10 +37,14 @@ async def retrieve(query: str, k: int) -> list[str]:
             status_code=response.status_code, detail="TEI embed service error"
         )
     query_vec = json.loads(response.content)[0]
-    
-    documents = LANCE_TABLE.search(
-        query=query_vec
-    ).nprobes(NPROBES).refine_factor(REFINE_FACTOR).limit(k).to_list()
+
+    documents = (
+        LANCE_TABLE.search(query=query_vec)
+        .nprobes(NPROBES)
+        .refine_factor(REFINE_FACTOR)
+        .limit(k)
+        .to_list()
+    )
     documents = [doc["text"] for doc in documents]
 
     if len(documents) == 0:
@@ -58,10 +65,10 @@ async def rerank(query: str, documents: list[str], k: int) -> list[str]:
                     RERANK_URL,
                     json={
                         "query": query,
-                        "texts": documents[i * BATCH_SIZE:(i + 1) * BATCH_SIZE],
-                        "truncate": True
+                        "texts": documents[i * BATCH_SIZE : (i + 1) * BATCH_SIZE],
+                        "truncate": True,
                     },
-                    timeout=httpx.Timeout(60.0)
+                    timeout=httpx.Timeout(60.0),
                 )
             except httpx.ConnectError:
                 raise HTTPException(
