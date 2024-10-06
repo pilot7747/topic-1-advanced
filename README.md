@@ -37,7 +37,7 @@ for doc in os.listdir(docs_path):
         if resp.status_code != 200: 
             print(f"error uploading document {doc}")
 ```
-Documents are expected to be preprocessed (chunked etc).
+Documents are expected to be preprocessed (chunked [1](https://towardsdatascience.com/rag-101-chunking-strategies-fdc6f6c2aaec), [2](https://antematter.io/blogs/optimizing-rag-advanced-chunking-techniques-study) etc).
 
 If you have a lot of documents (>100k) you may benefit from indexing your document table (more on this [here]()).
 You can do it as follows:
