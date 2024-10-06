@@ -56,6 +56,7 @@ On inference, you can send a request with the following parameters:
     max_out_tokens: int = 512 - max num of tokens. Used to drop retrieved pieces 
         of content if total prompt length goes beyond max contex length.
 ```
+Note you can optionally use a reranker ([3](https://www.pinecone.io/learn/series/rag/rerankers/)).
 Both embedding and reranking models are light enough to run on a cpu.
 
 To access the Gradio interface, open `http://0.0.0.0:7860` in a browser.
