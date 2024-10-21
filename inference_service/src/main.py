@@ -89,7 +89,6 @@ async def chat_with_llm(chat_request: ChatRequest) -> ChatResponse:
             {"role": "user", "content": chat_request.message},
         ]
         response = llm_pipeline(messages)
-        print(response)
         return ChatResponse(response=response[0]["generated_text"])
     except ValueError as ve:
         # Log the error with traceback
