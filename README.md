@@ -1,4 +1,4 @@
-# LLM Chat Project
+# Topic 3. Run open source LLM
 
 ## Overview
 
