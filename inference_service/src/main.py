@@ -9,7 +9,7 @@ from transformers import pipeline, AutoTokenizer
 import torch
 
 
-MODEL_NAME = os.environ["MODEL_NAME"]
+MODEL_NAME = os.environ.get("MODEL_NAME")
 # Load the model from CACHE_DIR if specified. Otherwise, use the default path
 CACHE_DIR = os.environ.get("CACHE_DIR", default=None)
 
@@ -51,7 +51,7 @@ async def lifespan(app: FastAPI):
     yield
 
     # Clean up GPU memory
-    del llm_pipeline
+    del tokenizer, llm_pipeline
     torch.cuda.empty_cache()
 
 
