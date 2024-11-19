@@ -30,7 +30,7 @@ jobs:
 
     - name: Configure docker to use Nebius as a credential helper
       run: |
-        nebius registry configure-helper
+        ~/.nebius/bin/nebius registry configure-helper
 
     - name: Build and push inference-service image
       run: |
@@ -64,7 +64,7 @@ jobs:
 
     - name: Configure cluster
       run: |
-        nebius mk8s cluster get-credentials --id ${{ secrets.NEBIUS_CLUSTER_ID }} --external
+        ~/.nebius/bin/nebius mk8s cluster get-credentials --id ${{ secrets.NEBIUS_CLUSTER_ID }} --external
 
     - name: Apply Kubernetes manifests
       run: |
