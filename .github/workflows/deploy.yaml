@@ -64,7 +64,7 @@ jobs:
 
     - name: Configure cluster
       run: |
-        nebius mk8s cluster get-credentials --id ${{ NEBIUS_CLUSTER_ID }} --external
+        nebius mk8s cluster get-credentials --id ${{ secrets.NEBIUS_CLUSTER_ID }} --external
 
     - name: Apply Kubernetes manifests
       run: |
