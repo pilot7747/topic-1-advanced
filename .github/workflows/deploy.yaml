@@ -28,9 +28,12 @@ jobs:
         curl -sSL https://storage.ai.nebius.cloud/nebius/install.sh | bash
         echo "${{ secrets.NEBIUS_CONFIG }}" > ~/.nebius/config.yaml
 
+    - name: Add Nebius bin to PATH
+      run: echo "$HOME/.nebius/bin" >> $GITHUB_PATH
+
     - name: Configure docker to use Nebius as a credential helper
       run: |
-        ~/.nebius/bin/nebius registry configure-helper
+        nebius registry configure-helper
 
     - name: Build and push inference-service image
       run: |
@@ -64,7 +67,7 @@ jobs:
 
     - name: Configure cluster
       run: |
-        ~/.nebius/bin/nebius mk8s cluster get-credentials --id ${{ secrets.NEBIUS_CLUSTER_ID }} --external
+        nebius mk8s cluster get-credentials --id ${{ secrets.NEBIUS_CLUSTER_ID }} --external
 
     - name: Apply Kubernetes manifests
       run: |
