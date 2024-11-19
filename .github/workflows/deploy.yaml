@@ -24,8 +24,8 @@ jobs:
 
     - name: Authenticate to Nebius
       run: |
+        rm -rf ~/.nebius
         curl -sSL https://storage.ai.nebius.cloud/nebius/install.sh | bash
-        mkdir ~/.nebius
         echo "${{ secrets.NEBIUS_CONFIG }}" > ~/.nebius/config.yaml
 
     - name: Configure docker to use Nebius as a credential helper
